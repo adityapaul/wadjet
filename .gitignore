@@ -1,0 +1,6 @@
+.DS_Store
+structure.txt
+train
+Images/
+UTKFace/
+*.zip
