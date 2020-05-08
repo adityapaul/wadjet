@@ -116,6 +116,7 @@ int main(int argc, char* argv[]){
     cout << "Number of epochs: " << epochs << endl;
     cout << "Window size: " << windowSize << endl;
     cout << "Total feature count: " << numFeatures << endl;
+    cout << "    - Selected feature count: " << haarNum << endl;
     cout << "Total training count: " << numSamples << endl;
     cout << "Total testing count: " << testfaces.size() + testnots.size() << endl;
     cout << "    - Face training count: " << facenames.size() << endl;
@@ -267,7 +268,7 @@ int main(int argc, char* argv[]){
         // run tests
         int correct = 0;
         int tp = 0, tn = 0, fp = 0, fn = 0;
-        for(int i = 0; i < 500; i++){
+        for(int i = 0; i < testSize; i++){
             // load dataset
             Mat pic;
             int sel = rand() % 2;
@@ -289,7 +290,7 @@ int main(int argc, char* argv[]){
                     ret += bestweights[j] * (features.at(bestidxs[j]).evaluate(intimg) >= thresholds[bestidxs[j]]);
                 }
             }
-            int res = round(ret);
+            int res = (ret >= 0.5);
             if(res == sel){
                 correct++;
                 if(res == 1) { tp++; }
@@ -310,27 +311,21 @@ int main(int argc, char* argv[]){
     // write data to file
     ofstream data;
     data.open("structure.txt");
-    data << "winSize: " << windowSize << endl;
-    data << "bestidxs: ";
+    data << windowSize << " " << haarNum << endl;
     for(int i = 0; i < haarNum; i++){
         data << bestidxs[i] << " ";
     }
-    data << "threshs: ";
     for(int i = 0; i < haarNum; i++){
         data << thresholds[bestidxs[i]] << " ";
     } 
     data << endl;
-    data << "gt: ";
     for(int i = 0; i < haarNum; i++){
         data << gt[bestidxs[i]] << " ";
     }
     data << endl;
-    data << "fweights: ";
     double totalfweights = 0, maxweights = 0;
     for(int i = 0; i < haarNum; i++){
-        data << featureweights[bestidxs[i]] << " ";
-        totalfweights += featureweights[bestidxs[i]];
-        maxweights = max(featureweights[bestidxs[i]], maxweights);
+        data << bestweights[i] << " ";
     }
     data << endl;
     return 0;
