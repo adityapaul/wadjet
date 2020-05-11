@@ -71,7 +71,6 @@ Feature::Feature(){
 
 Feature::Feature(int x, int y, int dx, int dy, int type){
     assert(x >= 0 && y >= 0); 
-    assert(x+dx < 24 && y+dy < 24);
     this->x = x;
     this->y = y;
     this->dx = dx;

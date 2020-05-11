@@ -19,6 +19,8 @@ int main(int argc, char* argv[]){
     int haarNum = 5000;
     int testSize = 500;
 
+    srand(time(NULL));
+
     for(int i = 0; i < argc; i++){
         if(argv[i][0] == '-' && i < argc - 1){
             if(strncmp(argv[i], "--epochs", 8) == 0 || strncmp(argv[i], "-e", 2) == 0){
@@ -97,19 +99,16 @@ int main(int argc, char* argv[]){
         }
     }
     int numFeatures = features.size();
-    int thresholds[numFeatures];
+    int* thresholds = new int[numFeatures];
     fill(thresholds, thresholds + numFeatures, 0.5);
-    bool gt[numFeatures];
+    bool* gt = new bool[numFeatures];
 
     cout << "Features initialized" << endl;
 
-    double featureweights[numFeatures];
-    fill(featureweights, featureweights + numFeatures, 1/numFeatures);
+    double* featureweights = new double[numFeatures];
 
     int bestidxs[haarNum];
     double bestweights[haarNum];
-
-    cout << "Feature weights initialized" << endl;
 
     cout << "================= TRAINING SUMMARY ====================" << endl;
     cout << "Training size: " << trainSize << endl;
@@ -310,24 +309,19 @@ int main(int argc, char* argv[]){
     
     // write data to file
     ofstream data;
-    data.open("structure.txt");
+    data.open("structure-" + to_string(windowSize) + ".txt");
     data << windowSize << " " << haarNum << endl;
     for(int i = 0; i < haarNum; i++){
-        data << bestidxs[i] << " ";
-    }
-    for(int i = 0; i < haarNum; i++){
+        Feature f = features.at(bestidxs[i]);
+        data << f.getX() << " " << f.getY() << " " << f.getDx() << " " << f.getDy() << " " << f.getType() << " ";
         data << thresholds[bestidxs[i]] << " ";
-    } 
-    data << endl;
-    for(int i = 0; i < haarNum; i++){
         data << gt[bestidxs[i]] << " ";
+        data << bestweights[i] << endl;
     }
-    data << endl;
-    double totalfweights = 0, maxweights = 0;
-    for(int i = 0; i < haarNum; i++){
-        data << bestweights[i] << " ";
-    }
-    data << endl;
+    // free variables
+    delete[] thresholds;
+    delete[] gt;
+    delete[] featureweights;
     return 0;
 }
 
